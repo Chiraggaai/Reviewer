@@ -1,21 +1,19 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import (
-    dashboard,
-    evidence_pack,
-    inbox,
-    mentoring_log,
-    metrics,
-    qa,
-    reviewers,
-    reviewer_notifications,
-    review_history,
-    reviews,
-    review_queue_module,
-    rework_coordination,
-    tasks,
-)
+from app.core.database import close_db, connect_db
+from app.reviewer_portfolio import router as reviewer_portfolio_router
+from app.reviewer_portfolio.routers import reviewer_invitations
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    await connect_db()
+    yield
+    await close_db()
+
 
 app = FastAPI(
     title="Glimmora Reviewer API",
@@ -24,6 +22,7 @@ app = FastAPI(
         "Reviewer dashboard, Review Queue (5), Evidence Pack (6), Rework Coordination (7), "
         "Workroom Q&A (8), Reviewer notifications (10), Review History, Mentoring Log, tasks, inbox, SLA metrics."
     ),
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -34,19 +33,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(dashboard.router, prefix="/api")
-app.include_router(metrics.router, prefix="/api")
-app.include_router(reviews.router, prefix="/api")
-app.include_router(tasks.router, prefix="/api")
-app.include_router(inbox.router, prefix="/api")
-app.include_router(reviewers.router, prefix="/api")
-app.include_router(reviewer_notifications.router, prefix="/api")
-app.include_router(review_history.router, prefix="/api")
-app.include_router(mentoring_log.router, prefix="/api")
-app.include_router(review_queue_module.router, prefix="/api")
-app.include_router(evidence_pack.router, prefix="/api")
-app.include_router(rework_coordination.router, prefix="/api")
-app.include_router(qa.router, prefix="/api")
+app.include_router(reviewer_portfolio_router, prefix="/api")
+app.include_router(reviewer_invitations.router, prefix="/api")
 
 
 @app.get("/health")

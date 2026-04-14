@@ -1,4 +1,5 @@
 # Render Blueprint — https://render.com/docs/blueprint-spec
+# Reviewer module stack: MONGODB_URL, DATABASE_NAME, SECRET_KEY (same as team ``app/routers/reviewer`` + auth).
 services:
   - type: web
     name: glimmora-reviewer-api
