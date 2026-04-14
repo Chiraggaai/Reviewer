@@ -9,6 +9,7 @@ from . import (
     mentoring_log,
     metrics,
     qa,
+    reviewer_admin,
     reviewers,
     reviewer_notifications,
     review_history,
@@ -24,6 +25,7 @@ router.include_router(metrics.router)
 router.include_router(reviews.router)
 router.include_router(tasks.router)
 router.include_router(inbox.router)
+router.include_router(reviewer_admin.router)
 router.include_router(reviewers.router)
 router.include_router(reviewer_notifications.router)
 router.include_router(review_history.router)
